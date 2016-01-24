@@ -1,0 +1,156 @@
+@main("Sample Apex Timeline") {
+
+  <style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .timeline-label {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+    #timeline3{
+      overflow: auto;
+      border:1px solid;
+    }
+    #timeline2 .axis {
+      transform: translate(0px,30px);
+      -ms-transform: translate(0px,30px); /* IE 9 */
+      -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+      -o-transform: translate(0px,30px); /* Opera */
+      -moz-transform: translate(0px,30px); /* Firefox */
+    }
+
+    .coloredDiv {
+      height:20px; width:20px; float:left;
+    }
+  </style>
+  <script type="text/javascript">
+    window.onload = function() {
+
+      var jsonData = [{"name":"MAIN","eventId":"ENTRY_POINT","timeStamp":"16:47:18.032","startTime":32910000,"endTime":419049000,"eventType":"EXECUTION","execStartTime":32910000,"operations":[{"name":"Type:Custom_Object__c","eventId":"[23]","timeStamp":"16:47:18.067","startTime":67561000,"endTime":173754000,"eventType":"DML","execStartTime":32910000,"operations":null,"rowCount":1,"elapsedMillis":106,"elapsedSinceStart":140},{"name":null,"eventId":"[24]","timeStamp":"16:47:18.174","startTime":174527000,"endTime":184678000,"eventType":"SOQL","execStartTime":32910000,"operations":null,"elapsedMillis":10,"elapsedSinceStart":151}],"elapsedMillis":386,"elapsedSinceStart":386},{"name":"Type:Custom_Object__c","eventId":"[23]","timeStamp":"16:47:18.067","startTime":67561000,"endTime":173754000,"eventType":"DML","execStartTime":32910000,"operations":null,"rowCount":1,"elapsedMillis":106,"elapsedSinceStart":140},{"name":null,"eventId":"[24]","timeStamp":"16:47:18.174","startTime":174527000,"endTime":184678000,"eventType":"SOQL","execStartTime":32910000,"operations":null,"elapsedMillis":10,"elapsedSinceStart":151}];
+
+
+
+      var width = 800;
+      var nbrFormat = d3.format("0,000");
+      function timelineHover() {
+        var chart = d3.timeline()
+          .width(width*4)
+          .stack()
+          .margin({left:70, right:30, top:0, bottom:0})
+          .tickFormat({
+              format: "\%S", 
+              tickTime: d3.time.second, 
+              tickNumber: 2, 
+              tickSize: 6 
+            }
+          );/*.hover(function (d, i, datum) { 
+          // d is the current rendering object
+          // i is the index during d3 rendering
+          // datum is the id object
+            var div = $('#hoverRes');
+            var colors = chart.colors();
+            div.find('.coloredDiv').css('background-color', colors(i))
+            div.find('#name').text(datum.name + ' ('+nbrFormat(d3.round((datum.endTime-datum.startTime)/1000000,1))+' ms)');
+          });
+          .click(function (d, i, datum) {
+            alert(datum.label);
+          })
+          .scroll(function (x, scale) {
+            $("#scrolled_date").text(scale.invert(x) + " to " + scale.invert(x+width));
+          });*/
+
+        var svg = d3.select("#timeline3").append("svg").attr("width", width)
+          .datum(jsonData).call(chart);
+      }
+
+      timelineHover();
+    }
+  </script>
+<ul id="myTab" class="nav nav-tabs">
+  <li class="active"><a href="#timeline" data-toggle="tab">Timeline</a></li>
+  <li class=""><a href="#viewdata" data-toggle="tab">View JSON</a></li>
+</ul>
+
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active in" id="timeline">
+	  <div id="timeline3"></div>
+  </div>
+  <div class="tab-pane fade" id="viewdata">
+	  <div id="jsonData">
+	  	<pre class="prettyprint">
+[ {
+  "name" : "MAIN",
+  "eventId" : "ENTRY_POINT",
+  "timeStamp" : "16:47:18.032",
+  "startTime" : 32910000,
+  "endTime" : 419049000,
+  "eventType" : "EXECUTION",
+  "execStartTime" : 32910000,
+  "operations" : [ {
+    "name" : "Type:Custom_Object__c",
+    "eventId" : "[23]",
+    "timeStamp" : "16:47:18.067",
+    "startTime" : 67561000,
+    "endTime" : 173754000,
+    "eventType" : "DML",
+    "execStartTime" : 32910000,
+    "operations" : null,
+    "rowCount" : 1,
+    "elapsedMillis" : 106,
+    "elapsedSinceStart" : 140
+  }, {
+    "name" : null,
+    "eventId" : "[24]",
+    "timeStamp" : "16:47:18.174",
+    "startTime" : 174527000,
+    "endTime" : 184678000,
+    "eventType" : "SOQL",
+    "execStartTime" : 32910000,
+    "operations" : null,
+    "elapsedMillis" : 10,
+    "elapsedSinceStart" : 151
+  } ],
+  "elapsedMillis" : 386,
+  "elapsedSinceStart" : 386
+}, {
+  "name" : "Type:Custom_Object__c",
+  "eventId" : "[23]",
+  "timeStamp" : "16:47:18.067",
+  "startTime" : 67561000,
+  "endTime" : 173754000,
+  "eventType" : "DML",
+  "execStartTime" : 32910000,
+  "operations" : null,
+  "rowCount" : 1,
+  "elapsedMillis" : 106,
+  "elapsedSinceStart" : 140
+}, {
+  "name" : null,
+  "eventId" : "[24]",
+  "timeStamp" : "16:47:18.174",
+  "startTime" : 174527000,
+  "endTime" : 184678000,
+  "eventType" : "SOQL",
+  "execStartTime" : 32910000,
+  "operations" : null,
+  "elapsedMillis" : 10,
+  "elapsedSinceStart" : 151
+} ]	  	
+	  	
+	  	</pre>
+	  </div>
+  </div>
+</div>
+  
+
+}

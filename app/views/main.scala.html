@@ -1,0 +1,115 @@
+@(title: String)(content: Html)
+
+
+<!DOCTYPE html>
+<html lang="en" ng-app="apextimeline">
+  <head>
+    <meta charset="utf-8">
+    <title>@title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet"></link>
+	<link href="/assets/css/hopscotch.min.css"  rel="stylesheet"></link>
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/public/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/public/ico/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/public/ico/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="/public/ico/apple-touch-icon-57-precomposed.png">
+	<link rel="shortcut icon" href="/public/ico/favicon.png">
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </head>
+
+  <body ng-controller="ApexTimeLineController">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" >
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Apex Timeline</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="/">Home</a></li>
+              <li><a href="/sample">Sample Timeline</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+			<ul class="nav pull-right">
+				<li>
+					<a ng-show="!authorized" href="#"ng-click="initiateOAuth()" id="login">Login to Salesforce</a>
+					<a ng-show="authorized && userInfo!=null" href="#">
+						<img ng-show="authorized && userInfo!=null" src="{{userInfo.photos.thumbnail}}" height="25" width="25" border="0"/>
+						&nbsp;{{userInfo.display_name}}
+					</a>
+				</li>
+			</ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+		<a href="https://github.com/anandbn/apextimeline">
+			<img style="position: absolute; top: 0; right: 0; border: 0;z-index:100;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" 
+				alt="Fork me on GitHub"></a>
+    </div>
+
+    <div class="container">
+	  @{content}
+      <hr>
+
+      <footer>
+        <p>&copy;Anand Narasimhan 2013</p>
+      </footer>
+
+    </div>
+<script type="text/javascript">
+	var CONFIG={
+       		clientId :'3MVG9y6x0357HlefnLzrysj7TpdiPwYb9hgr8tien0L2BZKoYtV.1X_4UxxZWCObzNoPWFpQlhtbELk.l.BWE',
+			loginUrl : 'https://login.salesforce.com',
+			callbackPath : 'http://apextimeline.herokuapp.com/oauthRedirect',
+			popup : true,
+			scope:'full'
+	};
+</script> 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/d3.v3.min.js"></script>
+<script src="/assets/js/d3-timeline.js"></script>
+<script src="https://na9.salesforce.com/canvas/sdk/js/29.0/canvas-all.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
+<script src="/assets/js/angularjs/app.js"></script>
+<script src="/assets/js/angularjs/controllers/ApexTimeLineController.js"></script>
+<script src="/assets/js/angularjs/services/ForceAuthService.js"></script>
+<script src="/assets/js/hopscotch.min.js"></script>
+<script src="/assets/js/tour.js"></script>
+
+<script type="text/javascript">
+
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	ga('create', 'UA-50120488-1', 'apextimeline.herokuapp.com');
+	ga('send', 'pageview');
+	
+</script>
+  </body>
+</html>

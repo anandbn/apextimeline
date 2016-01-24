@@ -1,0 +1,87 @@
+@(isError:java.lang.Boolean)
+@main("Visualize your Apex Debug logs") {
+@if(isError) {
+	<div class="alert alert-danger">Could not parse the debug log file. It is possible that your may have an incomplete log. 
+	If you have a complete log, file an issue on <a href="https://github.com/anandbn/apextimeline/issues" target="_blank">Github</a></div>
+}
+
+<div class="row-fluid">
+  <div class="span10" ng-show="authorized">
+	<form class="form-horizontal"><div class="control-group">
+		<label class="control-label" for="minRunTime">Minimum time to
+			display</label>
+		<div class="controls">
+			<div class="input-append">
+				<input type="text" id="minRunTime" name="minRunTime" class="input-mini" maxlength="4"
+					ng-model="minTimeToRun"> 
+				<span class="add-on">ms</span>
+			</div>
+		</div>
+
+	</form>
+  </div>
+</div>
+<div class="row-fluid">
+  <div class="span10" ng-show="authorized">
+	<table class="table table-bordered table-striped table-hover">
+	  <thead>
+	  	<tr>
+	  		<th>Start time</th>
+	  		<th>User</th>
+	  		<th>Total execution time</th>
+	  		<th>Log length (bytes)</th>
+	  		<th>Operation</th>
+	  		<th>Application</th>
+	  		<th>Analyze</th>
+	  	</tr>
+	  </thead>
+	  <tbody>
+	  	<tr ng-repeat="log in logRecords" ng-class="log.Status=='Success'?'success':'error'">
+	  		<td>{{log.StartTime | date:'medium'}}</td>
+	  		<td>{{log.LogUser.Name}}</td>
+	  		<td>{{log.DurationMilliseconds}}</td>
+	  		<td>{{log.LogLength}}</td>
+	  		<td>{{log.Operation}}</td>
+	  		<td>{{log.Application}}</td>
+	  		<td><a class="icon-eye-open" href="/showTimelinev2/{{log.Id}}?min={{minTimeToRun}}"></a></td>
+	  	</tr>
+	  	
+	  </tbody>
+	</table>		
+  </div>
+  
+  <div class="span6" ng-show="!authorized">
+	<form class="form-horizontal" method="POST" action="/showTimeline"
+		enctype="multipart/form-data">
+	
+	
+		<div class="control-group">
+			<label class="control-label" for="minRunTime" >Minimum time to
+				display</label>
+			<div class="controls" >
+				<div class="input-append">
+					<input  id="minRunTimeDiv" type="text" name="minRunTime" class="input-mini" maxlength="4"
+						value="100"> 
+					<span class="add-on">ms</span>
+				</div>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="logFile">File to analyze</label>
+			<div class="controls">
+				<input  id="logFile" type="file" name="logFile">
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<input type="submit"  id="showtimeline"  class="btn btn-primary" value="Show Timeline">
+			</div>
+		</div>
+	</form>  
+  </div>
+  
+</div>
+
+
+}
+

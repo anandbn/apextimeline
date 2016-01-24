@@ -1,0 +1,185 @@
+@(	jsonData:com.fasterxml.jackson.databind.JsonNode,
+	jsonStr:String,
+	logStats:dto.LogStatistics)
+@main("Apex Timeline") {
+
+  <style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .timeline-label {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+    #timeline3{
+      overflow: auto;
+      border:1px solid;
+    }
+    #timeline2 .axis {
+      transform: translate(0px,30px);
+      -ms-transform: translate(0px,30px); /* IE 9 */
+      -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+      -o-transform: translate(0px,30px); /* Opera */
+      -moz-transform: translate(0px,30px); /* Firefox */
+    }
+
+    .coloredDiv {
+      height:20px; width:20px; float:left;
+    }
+  </style>
+  <script type="text/javascript">
+    window.onload = function() {
+      jQuery.noConflict();
+      var rateTimelineData = @Html(jsonData.toString());
+      var width = 800;
+      var nbrFormat = d3.format("0,000");
+      function timelineHover() {
+        var chart = d3.timeline()
+          .width(width*4)
+          .stack()
+          .margin({left:70, right:30, top:0, bottom:0})
+          .tickFormat({
+              format: "%S", 
+              tickTime: d3.time.second, 
+              tickNumber: 2, 
+              tickSize: 6 
+            }
+          )/*.hover(function (d, i, datum) { 
+          // d is the current rendering object
+          // i is the index during d3 rendering
+          // datum is the id object
+            var div = $('#hoverRes');
+            var colors = chart.colors();
+            div.find('.coloredDiv').css('background-color', colors(i))
+            div.find('#name').text(datum.name + ' ('+nbrFormat(d3.round((datum.endTime-datum.startTime)/1000000,1))+' ms)');
+          });*/
+          .click(function (d, i, datum) {
+            /*console.log(datum);
+            alert(	'Operation:'+datum.name+'\n'+
+            		'Elapsed time:'+nbrFormat(datum.elapsedMillis)+
+            		' ms\nElapsed Since Start:'+nbrFormat(datum.elapsedSinceStart)+' ms');
+            */
+            var htmlLog = '<table class="table table-bordered">'+
+            		'<tbody><tr><td>Operation</td>'+
+            		'<td>'+datum.name+'</td></tr>'+
+            		'<tr><td>Execution Time</td>'+
+            		'<td>'+nbrFormat(datum.elapsedMillis)+' ms</td>'+
+            		'</tr>'+
+            		'<tr><td>Elapsed Since Start</td>'+
+            		'<td>'+nbrFormat(datum.elapsedSinceStart)+' ms</td>'+
+            		'</tr>';
+            		if(datum.rowCount){
+	            		htmlLog +='<tr><td># of Records</td>'+
+	            		'<td>'+datum.rowCount+'</td>'+
+	            		'</tr>';
+          			}
+            		
+            		htmlLog +'</tbody></table>';
+            jQuery("#logdetail_body").html(htmlLog);
+            jQuery("#logdetail").modal('show');
+           
+          });
+          /*.scroll(function (x, scale) {
+            $("#scrolled_date").text(scale.invert(x) + " to " + scale.invert(x+width));
+          });*/
+
+        var svg = d3.select("#timeline3").append("svg").attr("width", width)
+          .datum(rateTimelineData).call(chart);
+      }
+
+      timelineHover();
+    }
+  </script>
+
+<ul id="myTab" class="nav nav-tabs">
+  <li class="active"><a href="#timeline" data-toggle="tab">Timeline</a></li>
+  <li class=""><a href="#dbOps" data-toggle="tab">DB Operations</a></li>
+  <li class=""><a href="#viewdata" data-toggle="tab">View JSON</a></li>
+</ul>
+
+<div id="myTabContent" class="tab-content">
+  <div class="tab-pane fade active in" id="timeline">
+	  <div class="alert alert-info">Hover over the respect timeline bars to view time taken and click to view details.</div>
+	  <div id="timeline3"></div>
+  </div>
+  <div class="tab-pane fade" id="dbOps">
+  	<table class="table table-striped">
+ 		<thead>
+			<tr>
+				<th></th>
+				<th>Count</th>
+				<th>Total time (ms)</th>
+			</tr>
+		</thead>
+		<tbody>
+  			<tr>
+  				<td>SOQL Queries</td>
+  				<td>@logStats.getQueryCount()</td>
+  				<td>@logStats.getTotalSOQLTime()</td>
+  			</tr>
+  			<tr>
+  				<td>DML operations</td>
+  				<td>@logStats.getDmlObjectCount()</td>
+  				<td>@logStats.getTotalDMLTime()</td>
+  			</tr>
+  			<tr>
+  				<td>Apex triggers</td>
+  				<td>@logStats.getTriggerCount()</td>
+  				<td>@logStats.getTotalTriggerTime()</td>
+  			</tr>
+  		</tbody>
+  	</table>
+  	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Time (ms)</th>
+				<th>Operation</th>
+				<th># of Records</th>
+				<th>Operation</th>
+			</tr>
+		</thead>
+  		@if(logStats.getDbOperations()!=null){
+	  		@for(opr <- logStats.getDbOperations()) {
+	  			<tr>
+	  				<td align="right">@opr.getElapsedMillis()</td>
+	  				<td>@opr.getOperationType()</td>
+	  				<td>@opr.getRowCount()</td>
+	  				<td>@opr.getName()</td>
+	  				
+	  			</tr>
+			}
+		} 
+  	</table>
+  </div>
+  <div class="tab-pane fade" id="viewdata">
+	  <div id="jsonData">
+	  	<pre>@jsonStr</pre>
+	  </div>
+  </div>
+
+	<div class="modal hide fade" id="logdetail" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true">×</button>
+			<h3 id="myModalLabel">Log Detail:</h3>
+		</div>
+		<div class="modal-body" id="logdetail_body">
+
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+</div>
+
+}
